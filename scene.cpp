@@ -1,5 +1,7 @@
 #include "scene.h"
 #include "input.h"
+#include "objects.h"
+#include "monster.h"
 
 Scene* Scene::instance( 0 );
 
@@ -176,6 +178,61 @@ void Scene::renderScene( )
 
 void Scene::renderCursor( )
 {
-	hgeVector cursor = Input::getMousePosition( );
+	auto cursor = Input::getMousePosition( );
 	m_upCursor->Render( cursor.x , cursor.y );
+}
+
+void Scene::makeObstacle( ) 
+{
+	auto pos = Input::getMousePosition( );
+	auto indices = getCellIndices( pos );
+
+	int i = indices.first;
+	int j = indices.second;
+
+	char* center = scene->getCellCenters( );
+	if( !scene->canSetupObstacle( ) )
+		return;
+
+	if( objects->getMonster( ).get( ) != nullptr && (indices == getCellIndices( objects->getMonster( )->getPosition( ) ) 
+			|| objects->getMonster( )->isMoving( ) ) )
+	{
+		return;
+	}
+	if(  center[ i * MRC + j ]  == 'X' )
+	{
+		center[ i * MRC + j ] = '0';
+	}
+	else if( center[ i * MRC + j ] == '0' )
+	{
+		center[ i * MRC + j ] = 'X';
+	}
+}
+
+hgeVector Scene::getSelectedCellCenter( )
+{
+	hgeVector center = Input::getMousePosition( );
+
+	auto indices = getCellIndices( center );
+
+	center.x = TILE_STEP * indices.second + TILE_STEP / 2;
+	center.y = TILE_STEP * indices.first + TILE_STEP / 2;
+
+	return center;
+}
+
+std::pair<int,int> Scene::getCellIndices( hgeVector pos )
+{
+	int i = static_cast<int>( pos.y / TILE_STEP );
+	int j = static_cast<int>( pos.x / TILE_STEP );
+
+	return std::pair<int,int>( i, j );
+}
+
+hgeVector Scene::getCenterByIndices( std::pair<int, int> indices )
+{
+	float x = indices.second * TILE_STEP + TILE_STEP / 2.0f;
+	float y = indices.first * TILE_STEP + TILE_STEP / 2.0f;
+
+	return hgeVector( x, y );
 }

@@ -49,7 +49,7 @@ void Objects::prepareObjects( )
 
 void Objects::initMonster( )
 {
-	m_upMonster.reset( new Monster( 0.0f, 0.0f, directions::NORTH_EAST, "Recources\\monster.png" ) );
+	m_upMonster.reset( new Monster( "Resources\\monster.png" ) );
 }
 
 void Objects::frameMonster( )
@@ -76,4 +76,43 @@ void Objects::renderMonster( )
 void Objects::renderObjects( )
 {
 	renderMonster( );
+}
+
+void Objects::prepareMonsterToMove( )
+{
+	char* centers = scene->getCellCenters( );
+	hgeVector center = Scene::getSelectedCellCenter( );
+	
+	auto indices = Scene::getCellIndices( center );
+	int i = indices.first;
+	int j = indices.second;
+
+	if( objects->getMonster( ).get( ) == nullptr 
+		|| ( !objects->getMonster( )->isMoving( ) 
+		&& !objects->getMonster( )->isReadyToMove( ) ) )
+	{
+		if( centers[ i * MRC + j ] != 'X' )
+		{
+			if( objects->getMonster( ).get( ) == nullptr )
+			{
+				objects->initMonster( ); 
+			}
+			objects->getMonster( )->setPosition( center );
+			objects->getMonster( )->setReadinessToMove( );
+		}
+	}
+	else if( objects->getMonster( ).get( ) != nullptr 
+		&& objects->getMonster( )->isReadyToMove( ) 
+		&& !objects->getMonster( )->isMoving( ) )
+	{
+		if( centers[ i * MRC + j ] != 'X' && indices != Scene::getCellIndices( objects->getMonster( )->getPosition( ) ) )
+		{
+			if( !objects->getMonster( )->calculatePath( center ) )
+			{
+				return;
+			}
+			objects->getMonster( )->setMoving( ); 
+			objects->getMonster( )->calculateNextStep( );
+		}
+	}	
 }

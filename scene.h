@@ -77,11 +77,23 @@ public:
 	// Render curcor
 	void renderCursor( );
 
+	// Make an obstacle
+	void makeObstacle( );
+
 	// Posibility to setup an obstacle
 	bool canSetupObstacle( );
 
 	// Get cell centers
 	char* getCellCenters( );
+
+	// Get center of the selected cell
+	static hgeVector getSelectedCellCenter( );
+
+	// Get indices of the selected cell
+	static std::pair<int, int> getCellIndices( hgeVector pos );
+
+	// Get cell's center coordinates by indices
+	static hgeVector getCenterByIndices( std::pair<int, int> indices );
 };
 
 inline bool Scene::canSetupObstacle( )

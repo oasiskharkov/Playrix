@@ -16,38 +16,9 @@ hgeVector Input::getMousePosition( )
 
 void Input::handleLeftMouse( )
 {
-	char* centers = scene->getCellCenters( );
-
 	if( oldLeftMouseButtonState == false && hge->Input_GetKeyState( HGEK_LBUTTON ) )
 	{
-		hgeVector pos = getMousePosition( );
-		int i = static_cast<int>( pos.y / TILE_STEP );
-		int j = static_cast<int>( pos.x / TILE_STEP );
-
-		pos.x = TILE_STEP * i + TILE_STEP / 2;
-		pos.y = TILE_STEP * j + TILE_STEP / 2;
-
-		if( objects->getMonster( ).get( ) == nullptr || !objects->getMonster( )->isMoving( ) )
-		{
-			if( objects->getMonster( ).get( ) == nullptr )
-			{
-				objects->initMonster( ); 
-			}
-			if( centers[ i * MRC + j ] != 'X' )
-			{
-				objects->getMonster( )->setPosition( pos );
-				objects->getMonster( )->setReadinessToMove( );
-			}
-		}
-		else if( objects->getMonster( ).get( ) != nullptr && objects->getMonster( )->isReadyToMove( ) )
-		{
-			if( centers[ i * MRC + j ] != 'X' )
-			{
-				objects->getMonster( )->setDestination( pos );
-				objects->getMonster( )->setMoving( ); 
-				objects->getMonster( )->setReadinessToMove( false );
-			}
-		}	
+		objects->prepareMonsterToMove( );
 	}
 	oldLeftMouseButtonState = hge->Input_GetKeyState( HGEK_LBUTTON);
 }
@@ -56,22 +27,7 @@ void Input::handleRightMouse( )
 {
 	if( oldRightMouseButtonState == false && hge->Input_GetKeyState( HGEK_RBUTTON ) )
 	{
-		hgeVector pos = getMousePosition( );
-		int i = static_cast<int>( pos.y / TILE_STEP );
-		int j = static_cast<int>( pos.x / TILE_STEP );
-
-		char* center = scene->getCellCenters( );
-		if( scene->canSetupObstacle( ) )
-		{
-			if(  center[ i * MRC + j ]  == 'X' )
-			{
-				center[ i * MRC + j ] = '0';
-			}
-			else if( center[ i * MRC + j ] == '0' )
-			{
-				center[ i * MRC + j ] = 'X';
-			}
-		}
+		scene->makeObstacle( );
 	}
 	oldRightMouseButtonState = hge->Input_GetKeyState( HGEK_RBUTTON );
 }

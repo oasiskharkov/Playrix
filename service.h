@@ -8,11 +8,10 @@
 #include "hgeFont.h"
 #include <vector>
 #include <map>
+#include <queue>
 #include <set>
-#include <cmath>
 #include <algorithm>
 #include <string>
-#include <fstream>
 #include <memory>
 
 // forward class declarations

@@ -44,6 +44,9 @@ public:
 	// Init monster
 	void initMonster( );
 
+	// Prepare monster to move
+	void prepareMonsterToMove( );
+
 	// Get monster
 	std::unique_ptr<Monster>& getMonster( );
 };

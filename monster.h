@@ -30,6 +30,12 @@ private:
 	// Monster's stopped sprite
 	hgeSprite* m_pMonsterStopped;
 
+	// Monsters's path
+	std::vector< std::pair< int, int > > m_vPath;
+		
+	// Determine monster's direction
+	void Monster::determineDirection( std::pair<int, int> current, std::pair<int, int> next );
+
 	// Prepeare monster's resources
 	bool prepareResources( );
 
@@ -49,7 +55,7 @@ private:
 	Monster& operator = ( const Monster& );
 public:
 	// Constructor
-	Monster( float xPos, float yPos, directions dir, const char* monster, bool moving = false );
+	Monster( const char* monster, bool moving = false );
 
 	// Destructor
 	virtual ~Monster( );
@@ -60,6 +66,12 @@ public:
 	// Render monster
 	void render( );
 
+	// Calculate path
+	bool calculatePath( const hgeVector& destination );
+
+	// Calculate next step
+	void calculateNextStep( );
+
 	// Get monster's position
 	hgeVector getPosition( ) const;
 
@@ -68,6 +80,12 @@ public:
 
 	// Get monster's destination
 	hgeVector getDestination( ) const;
+
+	// Determine neighbor cells
+	void fillNeighborCells( std::vector< std::pair < int, int > >& neighbors, std::pair< int, int > point );
+
+	// Is cell valid
+	bool isPointInsideField( std::pair< int, int > point );
 
 	// Is monster moving
 	bool isMoving( ) const;
@@ -89,6 +107,7 @@ public:
 
 	// Set readiness to move
 	void setReadinessToMove( bool ready = true );	
+
 };
 
 inline hgeVector Monster::getPosition( ) const
