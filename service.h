@@ -5,11 +5,10 @@
 #include "hgesprite.h"
 #include "hgeanim.h"
 #include "hgevector.h"
-#include "hgeFont.h"
+#include "hgefont.h"
 #include <vector>
 #include <map>
 #include <queue>
-#include <set>
 #include <algorithm>
 #include <string>
 #include <memory>
@@ -35,6 +34,5 @@ const float TILE_STEP = 32.0f;
 
 // enumerations 
 enum game_errors { LOAD_SCENE_SOURCES, LOAD_MONSTER_SOURCES, NULL_POINTER, OPEN_FILE, UNKNOWN_ERROR };
-enum directions { NORTH_WEST, NORTH_EAST, SOUTH_WEST, SOUTH_EAST };
 
 #endif

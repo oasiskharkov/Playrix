@@ -12,7 +12,7 @@ private:
 	// Old right mouse button state
 	static bool oldRightMouseButtonState;
 public:
-	// Handle all tank control keys
+	// Handle all tank's control keys
 	static void handleTankControlKeys( );
 
 	// Get current mouse position 

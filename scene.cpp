@@ -24,13 +24,14 @@ Scene::Scene( int fieldNumber ) : m_nFieldNumber( fieldNumber ), cellCenters( 0 
 
 	m_hCellSelectionTex = hge->Texture_Load( "Resources\\green_cross.png" );
 
+	m_hCircleTex = hge->Texture_Load( "Resources\\circle.png" );
+
 	fillCellCenters( );
 
 	prepareSources( );
 
 	// If one of the source files is not found, free all scene sources and throw an error message.
-	if( !m_upFloorTile.get( ) || !m_upBlock.get( ) || !m_upCursor.get( ) 
-		|| !m_upCellSelectionAni.get( ) || !m_upFont.get( ) )
+	if( !m_upFloorTile || !m_upBlock || !m_upCursor || !m_upCellSelectionAni || !m_upCircle || !m_upFont )
 	{		
 		release( );
 		throw game_errors::LOAD_SCENE_SOURCES;
@@ -48,6 +49,7 @@ void Scene::release( )
 	hge->Texture_Free( m_hBlockTex );
 	hge->Texture_Free( m_hCursorTex );
 	hge->Texture_Free( m_hCellSelectionTex );
+	hge->Texture_Free( m_hCircleTex );
 	
 	delete [] cellCenters;
 
@@ -66,6 +68,8 @@ bool Scene::prepareSources( )
 		
 		m_upCellSelectionAni.reset( new hgeAnimation( m_hCellSelectionTex, 4, 5.0f, 0.0f, 0.0f, 32.0f, 32.0f ) );
 
+		m_upCircle.reset( new hgeSprite( m_hCircleTex, 0.0f, 0.0f, 88.0f, 88.0f ) );
+
 		m_upFont.reset( new hgeFont( "Resources\\font1.fnt" ) );
 	}
 	catch(...)
@@ -80,6 +84,7 @@ void Scene::readCentersFromFile( char* centers, const char* filename )
 	char directory[ 0x400 ];
 	HANDLE hFile;
 	DWORD dwBytes;
+
 	GetCurrentDirectory( 0x400, directory );
 	strcat( directory, "\\Resources" );
 	SetCurrentDirectory( directory );
@@ -161,12 +166,43 @@ void Scene::renderFloorTiles( )
 
 void Scene::renderPath( )
 {
+	if( objects->getMonster( ) != nullptr && objects->getMonster( )->isMoving( ) )
+	{
+		auto path = objects->getMonster( )->getPath( );
 
+		for( size_t i = path.size( ) - 1; i > 0; i-- )
+		{
+			m_upCircle->SetHotSpot( 44.0f, 44.0f );
+
+			auto current = getCenterByIndices( path[ i ] );
+			auto dest = getCenterByIndices( path[ i - 1 ] );
+			auto middle = hgeVector( ( current.x + dest.x ) / 2.0f, ( current.y + dest.y ) / 2.0f );
+
+			m_upCircle->RenderEx( current.x, current.y, 0.0f, 0.1f );
+			m_upCircle->RenderEx( middle.x, middle.y, 0.0f, 0.1f ); 
+		}
+	}
 }
 
 void Scene::renderCellSelection( )
 {
+	if( objects->getMonster( ) != nullptr && objects->getMonster( )->isMoving( ) )
+	{
+		auto dest = objects->getMonster( )->getPath( ).front( );
+		auto destination = getCenterByIndices( dest );
 
+		if( !m_upCellSelectionAni->IsPlaying( ) )
+		{
+			m_upCellSelectionAni->Play( );
+		}
+		else
+		{
+			m_upCellSelectionAni->Update( dt );
+		}
+
+		m_upCellSelectionAni->SetHotSpot( 16.0f, 16.0f );
+		m_upCellSelectionAni->RenderEx( destination.x, destination.y, 0.0f, 0.8f );
+	}
 }
 
 void Scene::renderScene( )
@@ -191,14 +227,16 @@ void Scene::makeObstacle( )
 	int j = indices.second;
 
 	char* center = scene->getCellCenters( );
+	
 	if( !scene->canSetupObstacle( ) )
 		return;
 
-	if( objects->getMonster( ).get( ) != nullptr && (indices == getCellIndices( objects->getMonster( )->getPosition( ) ) 
+	if( objects->getMonster( ) != nullptr && (indices == getCellIndices( objects->getMonster( )->getPosition( ) ) 
 			|| objects->getMonster( )->isMoving( ) ) )
 	{
 		return;
 	}
+
 	if(  center[ i * MRC + j ]  == 'X' )
 	{
 		center[ i * MRC + j ] = '0';
@@ -215,8 +253,8 @@ hgeVector Scene::getSelectedCellCenter( )
 
 	auto indices = getCellIndices( center );
 
-	center.x = TILE_STEP * indices.second + TILE_STEP / 2;
-	center.y = TILE_STEP * indices.first + TILE_STEP / 2;
+	center.x = TILE_STEP * indices.second + TILE_STEP / 2.0f;
+	center.y = TILE_STEP * indices.first + TILE_STEP / 2.0f;
 
 	return center;
 }

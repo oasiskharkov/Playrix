@@ -20,7 +20,7 @@ void Input::handleLeftMouse( )
 	{
 		objects->prepareMonsterToMove( );
 	}
-	oldLeftMouseButtonState = hge->Input_GetKeyState( HGEK_LBUTTON);
+	oldLeftMouseButtonState = hge->Input_GetKeyState( HGEK_LBUTTON );
 }
  
 void Input::handleRightMouse( )
@@ -38,8 +38,7 @@ bool Input::handleEsc( )
 }
 
 bool Input::handle1( )
-{
-	
+{	
 	bool isPressed = hge->Input_GetKeyState( HGEK_1 ); 
 	if ( isPressed )
 	{
@@ -81,5 +80,3 @@ bool Input::handle4( )
 	}
 	return isPressed;
 }
-
-

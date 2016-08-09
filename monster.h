@@ -18,9 +18,6 @@ private:
 	// Is monster moving
 	bool m_bIsMoving;
 
-	// Is ready to move
-	bool m_bReadyToMove;
-
 	// Monster's texture
 	HTEXTURE m_hMonsterTex;
 	
@@ -81,17 +78,17 @@ public:
 	// Get monster's destination
 	hgeVector getDestination( ) const;
 
+	// Get monster's path
+	std::vector<std::pair<int, int>>& getPath( );
+
 	// Determine neighbor cells
-	void fillNeighborCells( std::vector< std::pair < int, int > >& neighbors, std::pair< int, int > point );
+	void fillNeighborCells( std::vector<std::pair<int, int>>& neighbors, std::pair<int, int> point );
 
 	// Is cell valid
-	bool isPointInsideField( std::pair< int, int > point );
+	bool isPointInsideField( std::pair<int, int> point );
 
 	// Is monster moving
 	bool isMoving( ) const;
-
-	// Is monster ready to move
-	bool isReadyToMove( ) const;
 
 	// Set monster's position
 	void setPosition( hgeVector position );
@@ -103,11 +100,7 @@ public:
 	void setDestination( hgeVector destination );
 
 	// Set monster's movement
-	void setMoving( bool moving = true );
-
-	// Set readiness to move
-	void setReadinessToMove( bool ready = true );	
-
+	void setMoving( bool moving = true );	
 };
 
 inline hgeVector Monster::getPosition( ) const
@@ -130,11 +123,6 @@ inline bool Monster::isMoving( ) const
 	return m_bIsMoving;
 }
 
-inline bool Monster::isReadyToMove( ) const
-{
-	return m_bReadyToMove;
-}
-
 inline void Monster::setPosition( hgeVector position )
 {
 	m_vPos = position;
@@ -155,9 +143,9 @@ inline void Monster::setMoving ( bool moving )
 	m_bIsMoving = moving;
 }
 
-inline void Monster::setReadinessToMove( bool ready )
+inline std::vector<std::pair<int, int>>& Monster::getPath( )
 {
-	m_bReadyToMove = ready;
+	return m_vPath;
 }
 
 #endif

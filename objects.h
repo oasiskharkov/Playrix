@@ -11,6 +11,9 @@ private:
 	// Unique pointer to the monster
 	std::unique_ptr<Monster> m_upMonster;
 	
+	// Init monster
+	void initMonster( );
+
 	// Render monster
 	void renderMonster( );
 
@@ -41,9 +44,6 @@ public:
 	// Render objects
 	void renderObjects( );
 	
-	// Init monster
-	void initMonster( );
-
 	// Prepare monster to move
 	void prepareMonsterToMove( );
 

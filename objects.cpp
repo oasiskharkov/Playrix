@@ -31,9 +31,14 @@ void Objects::release( )
 
 void Objects::prepareObjects( )
 {
+	m_upMonster.reset( nullptr );
+}
+
+void Objects::initMonster( )
+{
 	try
 	{
-		m_upMonster.reset( nullptr );
+		m_upMonster.reset( new Monster( "Resources\\monster.png" ) );
 	}
 	catch(const game_errors& error)
 	{
@@ -47,14 +52,9 @@ void Objects::prepareObjects( )
 	}
 }
 
-void Objects::initMonster( )
-{
-	m_upMonster.reset( new Monster( "Resources\\monster.png" ) );
-}
-
 void Objects::frameMonster( )
 {
-	if( m_upMonster.get( ) != nullptr )
+	if( m_upMonster != nullptr )
 	{
 		m_upMonster->frame( );
 	}
@@ -67,7 +67,7 @@ void Objects::frameObjects( )
 
 void Objects::renderMonster( )
 {
-	if( m_upMonster.get( ) != nullptr )
+	if( m_upMonster != nullptr )
 	{
 		m_upMonster->render( );
 	}
@@ -87,32 +87,22 @@ void Objects::prepareMonsterToMove( )
 	int i = indices.first;
 	int j = indices.second;
 
-	if( objects->getMonster( ).get( ) == nullptr 
-		|| ( !objects->getMonster( )->isMoving( ) 
-		&& !objects->getMonster( )->isReadyToMove( ) ) )
+	if( objects->getMonster( ) == nullptr 
+		&& centers[ i * MRC + j ] != 'X' )
 	{
-		if( centers[ i * MRC + j ] != 'X' )
-		{
-			if( objects->getMonster( ).get( ) == nullptr )
-			{
-				objects->initMonster( ); 
-			}
-			objects->getMonster( )->setPosition( center );
-			objects->getMonster( )->setReadinessToMove( );
-		}
+		objects->initMonster( ); 
+		objects->getMonster( )->setPosition( center );
 	}
-	else if( objects->getMonster( ).get( ) != nullptr 
-		&& objects->getMonster( )->isReadyToMove( ) 
-		&& !objects->getMonster( )->isMoving( ) )
+	else if( objects->getMonster( ) != nullptr 
+		&& !objects->getMonster( )->isMoving( ) 
+		&& centers[ i * MRC + j ] != 'X'
+		&& indices != Scene::getCellIndices( objects->getMonster( )->getPosition( ) ) )
 	{
-		if( centers[ i * MRC + j ] != 'X' && indices != Scene::getCellIndices( objects->getMonster( )->getPosition( ) ) )
+		if( !objects->getMonster( )->calculatePath( center ) )
 		{
-			if( !objects->getMonster( )->calculatePath( center ) )
-			{
-				return;
-			}
-			objects->getMonster( )->setMoving( ); 
-			objects->getMonster( )->calculateNextStep( );
+			return;
 		}
+		objects->getMonster( )->setMoving( ); 
+		objects->getMonster( )->calculateNextStep( );
 	}	
 }

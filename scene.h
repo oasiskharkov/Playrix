@@ -19,6 +19,9 @@ class Scene
 
 	// Cell selection texture
 	HTEXTURE m_hCellSelectionTex;
+
+	// Path circle texture
+	HTEXTURE m_hCircleTex;
 	
 	// Unique pointer to the floor tile sprite
 	std::unique_ptr<hgeSprite> m_upFloorTile;
@@ -31,6 +34,9 @@ class Scene
 
 	// Unique pointer to the cell selection animation
 	std::unique_ptr<hgeAnimation> m_upCellSelectionAni;
+
+	// Unique pointer to the path circle
+	std::unique_ptr<hgeSprite> m_upCircle;
 
 	// Unique pointer to the font 
 	std::unique_ptr<hgeFont> m_upFont;
@@ -56,8 +62,11 @@ class Scene
 	// Fill array with cell centers
 	void fillCellCenters( );
 
-	// Read data from file
+	// Read data from source *.txt file
 	void readCentersFromFile( char* centers, const char* filename ); 
+
+	// Posibility to setup an obstacle
+	bool canSetupObstacle( );
 
 	// Private constructor
 	Scene( int fieldNumber );
@@ -79,9 +88,6 @@ public:
 
 	// Make an obstacle
 	void makeObstacle( );
-
-	// Posibility to setup an obstacle
-	bool canSetupObstacle( );
 
 	// Get cell centers
 	char* getCellCenters( );

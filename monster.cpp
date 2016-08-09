@@ -2,7 +2,7 @@
 #include "objects.h"
 #include "scene.h"
 
-Monster::Monster( const char* monster, bool moving ) : m_bIsMoving( moving ), m_bReadyToMove( false ),
+Monster::Monster( const char* monster, bool moving ) : m_bIsMoving( moving ),
 	m_pMonsterAnimated( 0 ), m_pMonsterStopped( 0 )
 {
 	m_hMonsterTex = hge->Texture_Load( monster );
@@ -100,20 +100,24 @@ void Monster::stop( )
 
 bool Monster::calculatePath( const hgeVector& destination )
 {
+	// start position
 	auto start = Scene::getCellIndices( m_vPos );
+
+	// destination
 	auto dest = Scene::getCellIndices( destination );
 
+	// field
 	auto cellCenters = scene->getCellCenters( );
 
 	// declare dictionary with visited cells of the field
-	std::map< std::pair< int, int >, bool > visited;
+	std::map<std::pair<int, int>, bool> visited;
 
 	// set flags for all cells as false
-	for(size_t i = 0; i < MRC; i++)
+	for( size_t i = 0; i < MRC; i++ )
 	{
-		for(size_t j = 0; j < MRC; j++)
+		for( size_t j = 0; j < MRC; j++ )
 		{
-			visited[ std::pair< int, int >( i, j ) ]  = false;
+			visited[ std::pair<int, int>( i, j ) ]  = false;
 		}
 	}
 
@@ -121,7 +125,7 @@ bool Monster::calculatePath( const hgeVector& destination )
 	visited[ start ] = true;
 
 	// declare queue to store analyzing cells
-	std::queue< std::pair< int, int > > analyzing;
+	std::queue< std::pair<int, int>> analyzing;
 
 	// enqueue the start position
 	analyzing.push( start );
@@ -130,19 +134,19 @@ bool Monster::calculatePath( const hgeVector& destination )
 	bool found = false;
 
 	// show from which cell we got to current
-	std::map< std::pair< int , int >, std::pair< int, int > > cameFrom;
+	std::map<std::pair<int, int>, std::pair<int, int>> cameFrom;
 
 	// operate until all nodes are not analyzed
 	while( analyzing.size( ) )
 	{
 		// get front cell
-		std::pair< int, int > frontOfQueue = analyzing.front();
+		std::pair<int, int> frontOfQueue = analyzing.front( );
 		
 		// dequeue front element
-		analyzing.pop();
+		analyzing.pop( );
 
-		// valid cells - neighbors
-		std::vector<std::pair< int, int> > neighbors;
+		// neighbors cells
+		std::vector<std::pair<int, int>> neighbors;
 		
 		// fill neighbor cells
 		fillNeighborCells( neighbors, frontOfQueue );
@@ -157,7 +161,7 @@ bool Monster::calculatePath( const hgeVector& destination )
 				visited[ neighbor ] = true;
 				// save the link to the cell from which we came to current
 				cameFrom[ neighbor ] = frontOfQueue;
-				// if the destination was found set the flag as true and break the loop
+				// if the destination was reached set the flag as true and break the loop
 				if( neighbor == dest )
 				{
 					found = true;		
@@ -176,10 +180,10 @@ bool Monster::calculatePath( const hgeVector& destination )
 	}
 	
 	// fill in the path from the start position to the destination
-	if(found)
+	if( found )
 	{
 		// begin from last cell
-		std::pair< int, int > lastCell = dest;
+		std::pair<int, int> lastCell = dest;
 
 		// start endless cycle
 		while( true )
@@ -191,45 +195,42 @@ bool Monster::calculatePath( const hgeVector& destination )
 			{
 				break;
 			}
-			// get the cell from which reached the last
+			// get the cell from which was reached the last
 			lastCell = cameFrom[ lastCell ];
 		}
-		
-		// removes current position
-		//m_vPath.pop_back();
 	}
 	
 	return found;
 }
 
-void Monster::fillNeighborCells( std::vector< std::pair < int, int > >& neighbors, std::pair< int, int > point )
+void Monster::fillNeighborCells( std::vector<std::pair<int, int>>& neighbors, std::pair<int, int> point )
 {
-	auto p1 = std::pair< int, int >( point.first + 1, point.second );
+	auto p1 = std::pair<int, int>( point.first + 1, point.second );
 	if( isPointInsideField( p1 ) )
 	{
 		neighbors.push_back( p1 );
 	}
 
-	auto p2 = std::pair< int, int >( point.first - 1, point.second );
+	auto p2 = std::pair<int, int>( point.first - 1, point.second );
 	if( isPointInsideField( p2 ) )
 	{
 		neighbors.push_back( p2 );
 	}
 
-	auto p3 = std::pair< int, int >( point.first, point.second - 1 );
+	auto p3 = std::pair<int, int>( point.first, point.second - 1 );
 	if( isPointInsideField( p3 ) )
 	{
 		neighbors.push_back( p3 );
 	}
 
-	auto p4 = std::pair< int, int >( point.first, point.second + 1 );
+	auto p4 = std::pair<int, int>( point.first, point.second + 1 );
 	if( isPointInsideField( p4 ) )
 	{
 		neighbors.push_back( p4 );
 	}
 }
 
-bool Monster::isPointInsideField( std::pair< int, int >  point )
+bool Monster::isPointInsideField( std::pair<int, int> point )
 {
 	return point.first >= 0 && point.first < MRC && point.second >= 0 && point.second < MRC;
 }

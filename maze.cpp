@@ -19,7 +19,7 @@ bool FrameFunc( )
 	// Get timer delta
 	dt = hge->Timer_GetDelta( );
 
-	// Press ESC to exit
+	// Press Esc to exit
 	if( Input::handleEsc( ) )
 	{
 		return true;
@@ -31,10 +31,10 @@ bool FrameFunc( )
 	// Left mouse single click
 	Input::handleLeftMouse( );
 
-	// Press 1, 2, 3 or 4 to choose the map
+	// Press 1, 2, 3 or 4 to choose the field
 	if( ( Input::handle1( ) || Input::handle2( ) || Input::handle3( ) || Input::handle4( ) ) 
-		&& ( objects->getMonster( ).get( ) == nullptr || 
-		( objects->getMonster( ).get( ) != nullptr && !objects->getMonster( )->isMoving( ) ) ) )
+		&& ( objects->getMonster( ) == nullptr || 
+		( objects->getMonster( ) != nullptr && !objects->getMonster( )->isMoving( ) ) ) )
 	{
 		return true;
 	}
@@ -61,7 +61,7 @@ bool RenderFunc( )
 
 int WINAPI WinMain( HINSTANCE, HINSTANCE, LPSTR, int )
 {	
-	// Check for memory leak if debug build
+	// Check for memory leaks if debug build
 	#if defined( DEBUG ) | defined( _DEBUG )
 		_CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );	
 	#endif
@@ -98,6 +98,9 @@ int WINAPI WinMain( HINSTANCE, HINSTANCE, LPSTR, int )
 				case game_errors::OPEN_FILE:
 					ShowErrorMessageIfAnyAndSafeExit( "Can't open source file to read data." );
 					return 0;
+				case game_errors::NULL_POINTER:
+					ShowErrorMessageIfAnyAndSafeExit( "Reference to a null pointer." );
+					return 0;
 				case game_errors::UNKNOWN_ERROR: 
 					ShowErrorMessageIfAnyAndSafeExit( "Unknown error." );
 					return 0;
@@ -127,7 +130,6 @@ int WINAPI WinMain( HINSTANCE, HINSTANCE, LPSTR, int )
 	ShowErrorMessageIfAnyAndSafeExit( ); 
 	return 0;
 }
-
 
 void ReleaseGameSources( )
 {
