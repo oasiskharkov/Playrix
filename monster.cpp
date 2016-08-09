@@ -130,7 +130,7 @@ bool Monster::calculatePath( const hgeVector& destination )
 	// enqueue the start position
 	analyzing.push( start );
 
-	// show if destination was found
+	// show is destination was found
 	bool found = false;
 
 	// show from which cell we got to current

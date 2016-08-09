@@ -228,11 +228,9 @@ void Scene::makeObstacle( )
 
 	char* center = scene->getCellCenters( );
 	
-	if( !scene->canSetupObstacle( ) )
-		return;
-
-	if( objects->getMonster( ) != nullptr && (indices == getCellIndices( objects->getMonster( )->getPosition( ) ) 
-			|| objects->getMonster( )->isMoving( ) ) )
+	if( !scene->canSetupObstacle( ) || ( objects->getMonster( ) != nullptr 
+		&& (indices == getCellIndices( objects->getMonster( )->getPosition( ) ) 
+			|| objects->getMonster( )->isMoving( ) ) ) )
 	{
 		return;
 	}

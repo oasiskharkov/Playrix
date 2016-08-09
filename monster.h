@@ -55,7 +55,7 @@ public:
 	Monster( const char* monster, bool moving = false );
 
 	// Destructor
-	virtual ~Monster( );
+	~Monster( );
 	
 	// Monster frame calculations
 	void frame( );

@@ -13,6 +13,7 @@ bool toExit = true;
 
 void ShowErrorMessageIfAnyAndSafeExit( const std::string& error = "" );
 void ReleaseGameSources( );
+void ProcessGameErrors( const game_errors& error );
 
 bool FrameFunc( )
 {
@@ -24,7 +25,7 @@ bool FrameFunc( )
 	{
 		return true;
 	}
-
+			
 	// Right mouse single click
 	Input::handleRightMouse( );
 
@@ -39,6 +40,7 @@ bool FrameFunc( )
 		return true;
 	}
 
+	// Objects' frame calculations
 	objects->frameObjects( );
 
 	return false;	
@@ -47,11 +49,14 @@ bool FrameFunc( )
 bool RenderFunc( )
 {
 	hge->Gfx_BeginScene( );
-	
+		
+	// Render all scene elements
 	scene->renderScene( );
-	
+		
+	// Render objects
 	objects->renderObjects( );
 
+	// Render mouse cursor
 	scene->renderCursor( );
 
 	hge->Gfx_EndScene( );
@@ -84,35 +89,19 @@ int WINAPI WinMain( HINSTANCE, HINSTANCE, LPSTR, int )
 			{
 				scene = Scene::getInstance( toNextMap );
 				objects = Objects::getInstance( );
+
+				hge->System_Start();
 			}
-			catch( const game_errors& gerr )
+			catch( const game_errors& error )
 			{
-				switch( gerr )
-				{
-				case game_errors::LOAD_SCENE_SOURCES:
-					ShowErrorMessageIfAnyAndSafeExit( "Can't load scene sources." );
-					return 0;
-				case game_errors::LOAD_MONSTER_SOURCES:
-					ShowErrorMessageIfAnyAndSafeExit( "Can't load monster sources." );
-					return 0;
-				case game_errors::OPEN_FILE:
-					ShowErrorMessageIfAnyAndSafeExit( "Can't open source file to read data." );
-					return 0;
-				case game_errors::NULL_POINTER:
-					ShowErrorMessageIfAnyAndSafeExit( "Reference to a null pointer." );
-					return 0;
-				case game_errors::UNKNOWN_ERROR: 
-					ShowErrorMessageIfAnyAndSafeExit( "Unknown error." );
-					return 0;
-				}
+				ProcessGameErrors( error );
+				return 0;
 			}
 			catch(...)
 			{
 				ShowErrorMessageIfAnyAndSafeExit( "Something goes wrong." );
 				return 0;
-			}	
-
-			hge->System_Start();
+			}		
 
 			if( toExit )
 			{
@@ -146,4 +135,26 @@ void ShowErrorMessageIfAnyAndSafeExit( const std::string& error )
 	ReleaseGameSources( );
 	hge->System_Shutdown( );
 	hge->Release( );
+}
+
+void ProcessGameErrors( const game_errors& error )
+{
+	switch( error )
+	{
+	case game_errors::LOAD_SCENE_SOURCES:
+		ShowErrorMessageIfAnyAndSafeExit( "Can't load scene sources." );
+		break;
+	case game_errors::LOAD_MONSTER_SOURCES:
+		ShowErrorMessageIfAnyAndSafeExit( "Can't load monster sources." );
+		break;
+	case game_errors::OPEN_FILE:
+		ShowErrorMessageIfAnyAndSafeExit( "Can't open source file to read data." );
+		break;
+	case game_errors::NULL_POINTER:
+		ShowErrorMessageIfAnyAndSafeExit( "Reference to a null pointer." );
+		break;
+	case game_errors::UNKNOWN_ERROR: 
+		ShowErrorMessageIfAnyAndSafeExit( "Unknown error." );
+		break;
+	}
 }
