@@ -79,13 +79,15 @@ bool Scene::prepareSources( )
 	return true;
 }
 
-void Scene::readCentersFromFile( char* centers, const char* filename )
+void Scene::readCellsFromFile( char* centers, const char* filename )
 {
 	char directory[ 0x400 ];
+	char mainDirectory[ 0x400 ];
 	HANDLE hFile;
 	DWORD dwBytes;
 
-	GetCurrentDirectory( 0x400, directory );
+	GetCurrentDirectory( 0x400, mainDirectory );
+	strcpy( directory, mainDirectory );
 	strcat( directory, "\\Resources" );
 	SetCurrentDirectory( directory );
 
@@ -114,6 +116,7 @@ void Scene::readCentersFromFile( char* centers, const char* filename )
 	centers = begin;
 
 	CloseHandle( hFile ); 
+	SetCurrentDirectory( mainDirectory );
 }
 
 void Scene::fillCellCenters( )
@@ -130,13 +133,13 @@ void Scene::fillCellCenters( )
 		switch( m_nFieldNumber )
 		{
 		case 1:
-			readCentersFromFile( cellCenters, "field1.txt" );
+			readCellsFromFile( cellCenters, "field1.txt" );
 			break;
 		case 2:
-			readCentersFromFile( cellCenters, "field2.txt" );
+			readCellsFromFile( cellCenters, "field2.txt" );
 			break;
 		case 3:
-			readCentersFromFile( cellCenters, "field3.txt" );
+			readCellsFromFile( cellCenters, "field3.txt" );
 			break;
 		}
 	}

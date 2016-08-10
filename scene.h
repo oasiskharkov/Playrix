@@ -63,7 +63,7 @@ class Scene
 	void fillCellCenters( );
 
 	// Read data from source *.txt file
-	void readCentersFromFile( char* centers, const char* filename ); 
+	void readCellsFromFile( char* centers, const char* filename ); 
 
 	// Posibility to setup an obstacle
 	bool canSetupObstacle( );
