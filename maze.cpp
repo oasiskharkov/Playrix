@@ -14,6 +14,8 @@ bool toExit = true;
 void ShowErrorMessageIfAnyAndSafeExit( const std::string& error = "" );
 void ReleaseGameSources( );
 void ProcessGameErrors( const game_errors& error );
+bool AnotherInstance( );
+
 
 bool FrameFunc( )
 {
@@ -80,6 +82,10 @@ int WINAPI WinMain( HINSTANCE, HINSTANCE, LPSTR, int )
 	hge->System_SetState( HGE_SCREENHEIGHT, GAME_HEIGHT );
 	hge->System_SetState( HGE_SCREENBPP, 32 );
 	hge->System_SetState( HGE_TITLE, "Maze" );
+
+	// Prevent Multiple Instances
+    if ( AnotherInstance( ) )
+        return false;
 	
 	if( hge->System_Initiate( ) )
 	{
@@ -157,4 +163,20 @@ void ProcessGameErrors( const game_errors& error )
 		ShowErrorMessageIfAnyAndSafeExit( "Unknown error." );
 		break;
 	}
+}
+
+bool AnotherInstance( )
+{
+    HANDLE ourMutex;
+
+    // Attempt to create a mutex using unique string
+    ourMutex = CreateMutex( NULL, true, "123LK_48161-XYZZY" );
+
+	 // Another instance was found
+    if( GetLastError( ) == ERROR_ALREADY_EXISTS )
+	 {
+        return true;
+	 }
+    // This is the only one instance
+    return false;               
 }
